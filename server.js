@@ -1,8 +1,12 @@
 const express = require("express")
 const path = require("path")
+const cors = require("cors")
+const corsOptions = require("./config/corsOptions")
 
 const app = express()
 const PORT = 6969 || env.PORTLOC
+
+app.use(cors(corsOptions))
 
 app.use(express.json()) // expressnya bisa baca JSON
 
