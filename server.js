@@ -2,8 +2,9 @@ const express = require("express")
 const path = require("path")
 
 const app = express()
-
 const PORT = 6969 || env.PORTLOC
+
+app.use(express.json()) // expressnya bisa baca JSON
 
 app.use("/", require("./routes/root"))
 

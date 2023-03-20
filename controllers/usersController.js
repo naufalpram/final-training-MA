@@ -11,9 +11,13 @@ const getAllUsers = async (req, res) => {
 const createNewUser = async (req, res) => {
   const { name } = req.body
 
-  const duplicate = await prisma.user.findMany({ name })
+  if (!name) {
+    return res.status(400).json({ message: "Data yang dikirim tidak lengkap" })
+  }
 
-  if (duplicate) {
+  const duplicate = await prisma.user.findMany({ where: { name } })
+
+  if (duplicate.length > 0) {
     return res.status(400).json({ message: "Nama sudah digunakan" })
   }
 
