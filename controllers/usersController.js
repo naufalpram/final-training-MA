@@ -4,16 +4,16 @@ const getAllUsers = (req, res) => {}
 
 // const getUserById = (req, res) => {}
 
-const createNewUser = (req, res) => {
+const createNewUser = async (req, res) => {
   const { name } = req.body
 
-  const duplicate = prisma.user.findMany({ name })
+  const duplicate = await prisma.user.findMany({ name })
 
   if (duplicate) {
     return res.status(400).json({ message: "Nama sudah digunakan" })
   }
 
-  prisma.user.create({
+  await prisma.user.create({
     data: {
       name,
     },
@@ -22,7 +22,7 @@ const createNewUser = (req, res) => {
   return res.status(201).json({ message: "User berhasil dibuat" }) // 201 -> Created
 }
 
-const updateUser = (req, res) => {
+const updateUser = async (req, res) => {
   const { id, name } = req.body
   //   const idParam = req.params.id
 
@@ -36,7 +36,7 @@ const updateUser = (req, res) => {
     return res.status(400).json({ message: "Data yang dikirim tidak lengkap" })
   }
 
-  const userExists = prisma.user.findUnique({ where: { id } })
+  const userExists = await prisma.user.findUnique({ where: { id } })
 
   if (!userExists) {
     return res
@@ -44,13 +44,13 @@ const updateUser = (req, res) => {
       .json({ message: "Request tidak dapat diproses: ID Tidak ditemukan" })
   }
 
-  const duplicate = prisma.user.findMany({ name })
+  const duplicate = await prisma.user.findMany({ name })
 
   if (duplicate) {
     return res.status(400).json({ message: "Request nama sudah digunakan" })
   }
 
-  prisma.user.update({
+  await prisma.user.update({
     data: {
       id,
       name,
@@ -60,14 +60,14 @@ const updateUser = (req, res) => {
   return res.status(200).json({ message: "User berhasil diperbarui" }) // 200 -> OK
 }
 
-const deleteUser = (req, res) => {
+const deleteUser = async (req, res) => {
   const { id } = req.body
 
   if (!id)
     return res.status(400).json({ message: "Request body tidak lengkap" })
 
   // Usernya ada gak, supaya bisa dihapus
-  const userExists = prisma.user.findUnique({ where: { id } })
+  const userExists = await prisma.user.findUnique({ where: { id } })
 
   if (!userExists) {
     return res
@@ -76,7 +76,7 @@ const deleteUser = (req, res) => {
   }
 
   // Proses penghapusan
-  prisma.user.delete({
+  await prisma.user.delete({
     where: {
       id,
     },
