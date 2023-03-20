@@ -31,18 +31,19 @@ const createNewUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-  const { id, name } = req.body
-  //   const idParam = req.params.id
+  // const { id, name } = req.body
+  const { name } = req.body
+  const id = req.params.id
 
   // idnya diambil dari param
-  //   if (!name) {
-  //     return res.status(400).json({ message: "Data yang dikirim tidak lengkap" })
-  //   }
-
-  // id termasuk dalam body
-  if (!id || !name) {
+  if (!name) {
     return res.status(400).json({ message: "Data yang dikirim tidak lengkap" })
   }
+
+  // id termasuk dalam body
+  // if (!id || !name) {
+  //   return res.status(400).json({ message: "Data yang dikirim tidak lengkap" })
+  // }
 
   const userExists = await prisma.user.findUnique({ where: { id } })
 

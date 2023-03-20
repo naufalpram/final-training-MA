@@ -6,9 +6,10 @@ router
   .route("/")
   .get(usersController.getAllUsers)
   .post(usersController.createNewUser)
-  .patch(usersController.updateUser)
+  // .patch(usersController.updateUser) // hidupin jika IDnya dipasang di body
   .delete(usersController.deleteUser)
 
-// router.route('/:id').patch()
+// hidupin jika IDnya dipasang sebagai path di URL
+router.route("/:id").patch(usersController.updateUser)
 
 module.exports = router
