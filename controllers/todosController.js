@@ -2,7 +2,7 @@ const prisma = require("../db")
 
 const getAllTodos = (req, res) => {}
 
-const getTodoByUserId = (req, res) => {}
+const getTodosByUserId = (req, res) => {}
 
 const createNewTodo = (req, res) => {}
 
