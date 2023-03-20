@@ -52,16 +52,18 @@ const updateUser = async (req, res) => {
       .json({ message: "Request tidak dapat diproses: ID Tidak ditemukan" })
   }
 
-  const duplicate = await prisma.user.findMany({ name })
+  const duplicate = await prisma.user.findMany({ where: { name } })
 
-  if (duplicate) {
+  if (duplicate.length > 0) {
     return res.status(400).json({ message: "Request nama sudah digunakan" })
   }
 
   await prisma.user.update({
     data: {
-      id,
       name,
+    },
+    where: {
+      id,
     },
   })
 
