@@ -1,7 +1,9 @@
 const express = require("express")
 const todosController = require("../controllers/todosController")
-
+const verifyJWT = require("../middleware/verifyJWT")
 const router = express.Router()
+
+router.use(verifyJWT)
 
 router
   .route("/")

@@ -14,6 +14,7 @@ app.use(express.json()) // expressnya bisa baca JSON
 
 app.use("/", require("./routes/root"))
 
+app.use("/auth", require("./routes/authRoutes"))
 app.use("/users", require("./routes/userRoutes"))
 app.use("/todos", require("./routes/todoRoutes"))
 
