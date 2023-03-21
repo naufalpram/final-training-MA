@@ -8,6 +8,8 @@ const corsOptions = require("./config/corsOptions")
 const app = express()
 const PORT = 6969 || env.PORTLOC
 
+app.use(cookieParser())
+
 app.use(cors(corsOptions))
 
 app.use(express.json()) // expressnya bisa baca JSON

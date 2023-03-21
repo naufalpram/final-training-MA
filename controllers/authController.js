@@ -50,6 +50,11 @@ const register = async (req, res) => {
     return res.status(400).json({ message: "Data registrasi tidak lengkap" })
   }
 
+  const emailIsUnique = await prisma.user.findUnique({ where: { email } })
+
+  if (emailIsUnique.length > 0)
+    return res.status(400).json({ message: "Email sudah digunakan" })
+
   const hashPassword = await bcrypt.hash(password, 10)
 
   const newUser = await prisma.user.create({
@@ -68,7 +73,35 @@ const register = async (req, res) => {
     .json({ message: `User: ${newUser.name} berhasil registrasi` })
 }
 
-const refresh = async (req, res) => {}
+const refresh = async (req, res) => {
+  const cookies = req.cookies
+
+  if (!cookies.refreshToken)
+    return res.status(401).json({ message: "Unauthorized" })
+
+  jwt.verify(
+    cookies.refreshToken,
+    process.env.REFRESH_TOKEN_SECRET,
+    async (err, decoded) => {
+      const userExists = await prisma.user.findUnique({
+        where: { id: decoded.id },
+      })
+
+      if (!userExists) return res.status(403).json({ message: "Forbidden" })
+
+      const accessToken = jwt.sign(
+        {
+          id: userExists.id,
+          email: userExists.email,
+          name: userExists.name,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "15m" }
+      )
+      return res.json({ accessToken })
+    }
+  )
+}
 
 const logout = async (req, res) => {}
 
