@@ -1,9 +1,15 @@
 const express = require("express")
+const todosController = require("../controllers/todosController")
 
 const router = express.Router()
 
-router.route("/").get().post().patch().delete()
+router
+  .route("/")
+  .get(todosController.getAllTodos)
+  .post(todosController.createNewTodo)
+  .patch(todosController.updateTodo)
+  .delete(todosController.deleteTodo)
 
-router.route("/:userId").get()
+router.route("/:userId").get(todosController.getTodosByUserId)
 
 module.exports = router
