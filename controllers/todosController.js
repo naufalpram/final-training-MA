@@ -6,7 +6,15 @@ const getAllTodos = async (req, res) => {
   if (getAll.length < 1)
     return res.status(200).json({ message: "Belum ada todos" })
 
-  return res.status(200).json({ todos: getAll, message: "OK" })
+  const getAllWithUser = await Promise.all(
+    getAll.map(async (todo) => {
+      const user = await prisma.user.findUnique({ where: { id: todo.userId } })
+
+      return { ...todo, userName: user.name }
+    })
+  )
+
+  return res.status(200).json({ todos: getAllWithUser, message: "OK" })
 }
 
 const getTodosByUserId = async (req, res) => {
