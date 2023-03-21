@@ -1,4 +1,5 @@
 const prisma = require("../db")
+const jwt = require("jsonwebtoken")
 
 const getAllTodos = async (req, res) => {
   const getAll = await prisma.todos.findMany()
