@@ -52,19 +52,30 @@ const createNewTodo = async (req, res) => {
 const updateTodo = async (req, res) => {
   const { id, title, body, userId } = req.body
 
-  if (!id || !title || !userId) {
+  if (!id || !title) {
     return res.status(400).json({ message: "Data tidak lengkap" })
   }
 
-  const userExists = await prisma.user.findUnique({ where: { id: userId } })
+  if (userId) {
+    const userExists = await prisma.user.findUnique({ where: { id: userId } })
 
-  if (userExists.length < 1)
-    return res.status(400).json({ message: "UserId tidak valid" })
+    if (userExists.length < 1)
+      return res.status(400).json({ message: "UserId tidak valid" })
+  }
 
-  const updateTodos = await prisma.todos.update({
-    data: { title, body, userId, updatedAt: new Date(Date.now()) },
-    where: { id },
-  })
+  let updateTodos
+
+  if (userId) {
+    updateTodos = await prisma.todos.update({
+      data: { title, body, userId, updatedAt: new Date(Date.now()) },
+      where: { id },
+    })
+  } else {
+    updateTodos = await prisma.todos.update({
+      data: { title, body, updatedAt: new Date(Date.now()) },
+      where: { id },
+    })
+  }
 
   if (!updateTodos) {
     return res.status(400).json({ message: "Todos tidak berhasil diperbarui" })
