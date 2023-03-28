@@ -13,21 +13,74 @@ datasource db {
 model User {
   id String @id @default(uuid())
 
-  name  String
-  email String @unique
+  username String   @unique
   password String
-  todos Todos[]
+  role     Role     @default(USER)
+  Profile  Profile?
 }
 
-model Todos {
+model Profile {
   id String @id @default(uuid())
 
-  title String
-  body  String?
+  name      String
+  email     String @unique
+  gender    String
+  birthdate String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  userId String
   user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+}
+
+model Hobbies {
+  id Int @id @default(autoincrement())
+
+  picture     String
+  title       String
+  description String?
+}
+
+model Skills {
+  id Int @id @default(autoincrement())
+
+  icon  String
+  title String
+  type  SkillType
+
+  projects   Projects[]
+  experience Experience[]
+}
+
+model Experience {
+  id Int @id @default(autoincrement())
+
+  icon         String?
+  title        String
+  description  String
+  date_started DateTime
+  date_ended   DateTime?
+
+  skills Skills[]
+}
+
+model Projects {
+  id Int @id @default(autoincrement())
+
+  picture      String?
+  title        String
+  affiliation  String
+  description  String
+  date_started DateTime
+  date_ended   DateTime
+
+  skills Skills[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SkillType {
+  SOFT
+  HARD
 }

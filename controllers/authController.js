@@ -2,13 +2,15 @@ const prisma = require("../db")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
+const RegisterUserData = require('../dto/RegisterUserData')
+
 const login = async (req, res) => {
-  const { email, password } = req.body
+  const { username, password } = req.body
 
-  if (!email || !password)
-    return res.status(400).json({ message: "email/password tidak lengkap" })
+  if (!username || !password)
+    return res.status(400).json({ message: "username/password tidak lengkap" })
 
-  const userExists = await prisma.user.findUnique({ where: { email } })
+  const userExists = await prisma.user.findUnique({ where: { username } })
 
   if (!userExists)
     return res.status(400).json({ message: "User tidak ditemukan" })
@@ -17,11 +19,16 @@ const login = async (req, res) => {
 
   if (!validatePwd) return res.status(401).json({ message: "Gagal otorisasi" })
 
+  const profile = await prisma.profile.findUnique({ where: { userId: userExists.id } })
+
+  if (!profile)
+    return res.status(500).json({ message: "Terdapat kesalahan pada server"})
+
   const accessToken = jwt.sign(
     {
       id: userExists.id,
-      email: userExists.email,
-      name: userExists.name,
+      username: userExists.username,
+      name: profile.name,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
@@ -44,33 +51,49 @@ const login = async (req, res) => {
 }
 
 const register = async (req, res) => {
-  const { name, email, password } = req.body
+  const registerData = new RegisterUserData(req.body)
 
-  if (!name || !email || !password) {
+  if (!registerData.username || !registerData.password || !registerData.name || !registerData.email || !registerData.gender || !registerData.birthdate) {
     return res.status(400).json({ message: "Data registrasi tidak lengkap" })
   }
 
-  const emailIsUnique = await prisma.user.findUnique({ where: { email } })
+  const emailUsed = await prisma.profile.findUnique({ where: { email: registerData.email } })
+  const usernameUsed = await prisma.user.findUnique({ where: { username: registerData.username } })
 
-  if (emailIsUnique.length > 0)
-    return res.status(400).json({ message: "Email sudah digunakan" })
+  if (emailUsed || usernameUsed)
+    return res.status(400).json({ message: "Username atau Email sudah digunakan" })
 
-  const hashPassword = await bcrypt.hash(password, 10)
+  const hashPassword = await bcrypt.hash(registerData.password, 10)
 
   const newUser = await prisma.user.create({
     data: {
-      name,
-      email,
+      username: registerData.username,
       password: hashPassword,
+      role: registerData.role
     },
   })
 
   if (!newUser)
     return res.status(400).json({ message: "Gagal melakukan registrasi" })
+  
+  const userProfile = await prisma.profile.create({
+    data: {
+      name: registerData.name,
+      email: registerData.email,
+      gender: registerData.gender,
+      birthdate: registerData.birthdate,
+      userId: newUser.id
+    }
+  })
+
+  if (!userProfile){
+    await prisma.user.delete({ where: { id: newUser.id }}) // mencegah user ada namun profile tidak ada
+    return res.status(400).json({ message: "Gagal membuat profil"})
+  }
 
   return res
     .status(201)
-    .json({ message: `User: ${newUser.name} berhasil registrasi` })
+    .json({ message: `User: ${userProfile.name} berhasil registrasi` })
 }
 
 const refresh = async (req, res) => {
@@ -89,11 +112,15 @@ const refresh = async (req, res) => {
 
       if (!userExists) return res.status(403).json({ message: "Forbidden" })
 
+      const profile = await prisma.profile.findUnique({
+        where: { userId: userExists.id }
+      })
+
       const accessToken = jwt.sign(
         {
           id: userExists.id,
-          email: userExists.email,
-          name: userExists.name,
+          username: userExists.username,
+          name: profile.name,
         },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "15m" }
@@ -103,6 +130,9 @@ const refresh = async (req, res) => {
   )
 }
 
-const logout = async (req, res) => {}
+const logout = async (req, res) => {
+  res.clearCookie("refreshToken")
+  return res.status(200).json({ message: "Logged Out"})
+}
 
 module.exports = { login, register, refresh, logout }
