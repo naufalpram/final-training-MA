@@ -22,8 +22,9 @@ const getExperienceById = async (req, res) => {
 }
 
 const createExperience = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa membuat experience selain role ADMIN"})
+
     const expData = new ExperienceData(req.body)
-    console.log(expData)
     if (!expData.title || !expData.employmentType || !expData.description || !expData.dateStarted) {
         return res.status(400).json({ message: "Data yang dikirim tidak lengkap"})
     }
@@ -46,6 +47,8 @@ const createExperience = async (req, res) => {
 }
 
 const updateExperience = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa memperbarui experience selain role ADMIN"})
+
     const expData = new ExperienceData(req.body)
 
     if (!expData.id || !(expData.title || expData.employmentType || expData.description || expData.dateStarted)) {
@@ -71,6 +74,8 @@ const updateExperience = async (req, res) => {
 }
 
 const deleteExperience = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa menghapus experience selain role ADMIN"})
+
     const { id } = req.body
 
     if (!id) {

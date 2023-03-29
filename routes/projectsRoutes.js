@@ -3,13 +3,11 @@ const router = express.Router()
 const verifyJWT = require("../middleware/verifyJWT")
 const projectsController = require('../controllers/projectsController')
 
-// router.use(verifyJWT)
-
 router.route("/")
-    .post(projectsController.createProject)
+    .post(verifyJWT, projectsController.createProject)
     .get(projectsController.getAllProjects)
-    .patch(projectsController.updateProject)
-    .delete(projectsController.deleteProject)
+    .patch(verifyJWT, projectsController.updateProject)
+    .delete(verifyJWT, projectsController.deleteProject)
 
 router.route("/:id").get(projectsController.getProjectById)
 

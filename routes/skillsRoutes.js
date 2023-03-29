@@ -3,13 +3,11 @@ const router = express.Router()
 const verifyJWT = require('../middleware/verifyJWT')
 const skillsController = require('../controllers/skillsController')
 
-// router.use(verifyJWT)
-
 router.route("/")
-    .post(skillsController.createSkill)
+    .post(verifyJWT, skillsController.createSkill)
     .get(skillsController.getAllSkills)
-    .patch(skillsController.updateSkill)
-    .delete(skillsController.deleteSkill)
+    .patch(verifyJWT, skillsController.updateSkill)
+    .delete(verifyJWT, skillsController.deleteSkill)
 
 router.route("/:id").get(skillsController.getSkillById)
 

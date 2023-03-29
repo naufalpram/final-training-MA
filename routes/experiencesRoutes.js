@@ -3,13 +3,11 @@ const router = express.Router()
 const verifyJWT = require("../middleware/verifyJWT")
 const experiencesController = require('../controllers/experiencesController')
 
-// router.use(verifyJWT)
-
 router.route("/")
-    .post(experiencesController.createExperience)
+    .post(verifyJWT, experiencesController.createExperience)
     .get(experiencesController.getAllExperiences)
-    .patch(experiencesController.updateExperience)
-    .delete(experiencesController.deleteExperience)
+    .patch(verifyJWT, experiencesController.updateExperience)
+    .delete(verifyJWT, experiencesController.deleteExperience)
 
 router.route("/:id").get(experiencesController.getExperienceById)
 

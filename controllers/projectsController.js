@@ -22,6 +22,8 @@ const getProjectById = async (req, res) => {
 }
 
 const createProject = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa membuat project selain role ADMIN"})
+
     const projectData = new ProjectData(req.body)
     if (!projectData.title || !projectData.affiliation || !projectData.description || !projectData.dateStarted)
         return res.status(400).json({ message: "Data project tidak lengkap"})
@@ -51,6 +53,8 @@ const createProject = async (req, res) => {
 }
 
 const updateProject = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa memperbarui project selain role ADMIN"})
+
     const projectData = new ProjectData(req.body)
     if (!projectData.id || !(projectData.title || projectData.affiliation || projectData.description || projectData.dateStarted || projectData.dateEnded || projectData.skillNames))
         return res.status(400).json({ message: "Data update tidak lengkap"})
@@ -86,6 +90,8 @@ const updateProject = async (req, res) => {
 }
 
 const deleteProject = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa menghapus project selain role ADMIN"})
+
     const { id } = req.body
     
     if (!id) return res.status(400).json({ message: "Data tidak lengkap"})

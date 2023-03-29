@@ -21,6 +21,8 @@ const getSkillById = async (req, res) => {
 }
 
 const createSkill = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa membuat skill selain role ADMIN"})
+
     const { icon, title } = req.body
 
     if (!title) return res.status(400).json({ message: "Data yang dikirim tidak lengkap"})
@@ -38,6 +40,8 @@ const createSkill = async (req, res) => {
 }
 
 const updateSkill = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa memperbarui skill selain role ADMIN"})
+
     const { id, icon, title} = req.body
 
     if (!id || !(title || icon)) return res.status(400).json({ message: "Data yang dikirim tidak lengkap"})
@@ -61,6 +65,8 @@ const updateSkill = async (req, res) => {
 }
 
 const deleteSkill = async (req, res) => {
+    if (req.role !== "ADMIN") return res.status(403).json({ message: "Unauthorized: tidak bisa menghapus skill selain role ADMIN"})
+
     const { id } = req.body
 
     if (!id) return res.status(400).json({ message: "Data yang dikirim tidak lengkap"})
