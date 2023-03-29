@@ -19,16 +19,11 @@ const login = async (req, res) => {
 
   if (!validatePwd) return res.status(401).json({ message: "Gagal otorisasi" })
 
-  const profile = await prisma.profile.findUnique({ where: { userId: userExists.id } })
-
-  if (!profile)
-    return res.status(500).json({ message: "Terdapat kesalahan pada server"})
-
   const accessToken = jwt.sign(
     {
       id: userExists.id,
       username: userExists.username,
-      name: profile.name,
+      role: userExists.role,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "15m" }
@@ -47,7 +42,7 @@ const login = async (req, res) => {
     httpOnly: true,
   })
 
-  res.json({ accessToken })
+  res.json({ user: {username: userExists.username, role: userExists.role}, message: "Login berhasil", accessToken: accessToken })
 }
 
 const register = async (req, res) => {
@@ -112,15 +107,11 @@ const refresh = async (req, res) => {
 
       if (!userExists) return res.status(403).json({ message: "Forbidden" })
 
-      const profile = await prisma.profile.findUnique({
-        where: { userId: userExists.id }
-      })
-
       const accessToken = jwt.sign(
         {
           id: userExists.id,
           username: userExists.username,
-          name: profile.name,
+          role: userExists.role,
         },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "15m" }

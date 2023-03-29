@@ -31,46 +31,35 @@ model Profile {
   userId String @unique
 }
 
-model Hobbies {
-  id Int @id @default(autoincrement())
-
-  picture     String
-  title       String
-  description String?
-}
-
 model Skills {
   id Int @id @default(autoincrement())
 
-  icon  String
-  title String
-  type  SkillType
+  icon  String?
+  title String  @unique
 
-  projects   Projects[]
-  experience Experience[]
+  projects Projects[]
 }
 
 model Experience {
   id Int @id @default(autoincrement())
 
-  icon         String?
-  title        String
-  description  String
-  date_started DateTime
-  date_ended   DateTime?
-
-  skills Skills[]
+  icon           String?
+  title          String
+  employmentType String
+  description    String
+  dateStarted    DateTime
+  dateEnded      DateTime?
 }
 
 model Projects {
   id Int @id @default(autoincrement())
 
-  picture      String?
-  title        String
-  affiliation  String
-  description  String
-  date_started DateTime
-  date_ended   DateTime
+  picture     String?
+  title       String
+  affiliation String
+  description String
+  dateStarted DateTime
+  dateEnded   DateTime?
 
   skills Skills[]
 }
@@ -78,9 +67,4 @@ model Projects {
 enum Role {
   USER
   ADMIN
-}
-
-enum SkillType {
-  SOFT
-  HARD
 }

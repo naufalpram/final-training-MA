@@ -17,6 +17,9 @@ app.use(express.json()) // expressnya bisa baca JSON
 app.use("/", require("./routes/root"))
 
 app.use("/auth", require("./routes/authRoutes"))
+app.use("/projects", require("./routes/projectsRoutes"))
+app.use("/experiences", require("./routes/experiencesRoutes"))
+app.use("/skills", require("./routes/skillsRoutes"))
 
 app.all("*", (req, res) => {
   res.status(404)
