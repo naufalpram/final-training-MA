@@ -11,4 +11,6 @@ router.route("/")
     .patch(skillsController.updateSkill)
     .delete(skillsController.deleteSkill)
 
+router.route("/:id").get(skillsController.getSkillById)
+
 module.exports = router

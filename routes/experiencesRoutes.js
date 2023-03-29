@@ -11,4 +11,6 @@ router.route("/")
     .patch(experiencesController.updateExperience)
     .delete(experiencesController.deleteExperience)
 
+router.route("/:id").get(experiencesController.getExperienceById)
+
 module.exports = router

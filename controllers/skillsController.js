@@ -8,6 +8,18 @@ const getAllSkills = async (req, res) => {
     return res.status(200).json({ skills: getAll, message: "OK"})
 }
 
+const getSkillById = async (req, res) => {
+    const id = parseInt(req.params.id)
+
+    if (!id) return res.status(400).json({ message: "Data yang dikirim tidak lengkap"})
+
+    const skill = await prisma.skills.findUnique({ where: { id }})
+
+    if (!skill) return res.status(400).json({ message: "Skill tidak ditemukan"})
+    
+    return res.status(200).json({ skill: skill, message: "Skill berhasil ditemukan"})
+}
+
 const createSkill = async (req, res) => {
     const { icon, title } = req.body
 
@@ -69,4 +81,4 @@ const deleteSkill = async (req, res) => {
     return res.status(200).json({ message: "Skill berhasil dihapus"})
 }
 
-module.exports = { getAllSkills, createSkill, updateSkill, deleteSkill}
+module.exports = { getAllSkills, createSkill, updateSkill, deleteSkill, getSkillById}

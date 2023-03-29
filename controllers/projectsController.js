@@ -6,7 +6,19 @@ const getAllProjects = async (req, res) => {
     
     if (getAllWithSkills.length < 1) return res.status(200).json({ message: "Belum ada project"})
 
-    return res.status(200).json({ experiences: getAllWithSkills, message: "OK"})
+    return res.status(200).json({ projects: getAllWithSkills, message: "OK"})
+}
+
+const getProjectById = async (req, res) => {
+    const id = parseInt(req.params.id)
+
+    if (!id) return res.status(400).json({ message: "Data yang dikirim tidak lengkap"})
+
+    const project = await prisma.projects.findUnique({ where: { id }})
+
+    if (!project) return res.status(400).json({ message: "Project tidak ditemukan"})
+    
+    return res.status(200).json({ project: project, message: "Project berhasil ditemukan"})
 }
 
 const createProject = async (req, res) => {
@@ -88,4 +100,4 @@ const deleteProject = async (req, res) => {
     return res.status(200).json({ message: "Project berhasil dihapus" })
 }
 
-module.exports = { getAllProjects, createProject, updateProject, deleteProject}
+module.exports = { getAllProjects, createProject, updateProject, deleteProject, getProjectById}

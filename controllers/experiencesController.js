@@ -9,6 +9,18 @@ const getAllExperiences = async (req, res) => {
   return res.status(200).json({ experiences: getAll, message: "OK"})
 }
 
+const getExperienceById = async (req, res) => {
+    const id = parseInt(req.params.id)
+
+    if (!id) return res.status(400).json({ message: "Data yang dikirim tidak lengkap"})
+
+    const exp = await prisma.experience.findUnique({ where: { id }})
+
+    if (!exp) return res.status(400).json({ message: "Experience tidak ditemukan"})
+    
+    return res.status(200).json({ experience: exp, message: "Experience berhasil ditemukan"})
+}
+
 const createExperience = async (req, res) => {
     const expData = new ExperienceData(req.body)
     console.log(expData)
@@ -81,4 +93,4 @@ const deleteExperience = async (req, res) => {
     return res.status(200).json({ message: "Experience berhasil dihapus"})
 }
 
-module.exports = { getAllExperiences, createExperience, updateExperience, deleteExperience}
+module.exports = { getAllExperiences, createExperience, updateExperience, deleteExperience, getExperienceById}
